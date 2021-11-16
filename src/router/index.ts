@@ -13,6 +13,21 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Account',
     component: () => import('@/views/Account.vue'),
   },
+  {
+    path: '/new',
+    name: 'New',
+    component: () => import('@/views/New.vue'),
+  },
+  {
+    path: '/newaccount',
+    name: 'NewAccount',
+    component: () => import('@/views/NewAccount.vue'),
+  },
+  {
+    path: '/neworg',
+    name: 'NewOrg',
+    component: () => import('@/views/NewOrg.vue'),
+  },
 ]
 
 const router = createRouter({

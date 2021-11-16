@@ -15,7 +15,9 @@
         Go to account
       </collective-button>
     </card>
+    
     <spacer :size="24" />
+    
     <div class="home">
       <card
         v-for="(link, index) in links"
@@ -27,6 +29,11 @@
       </card>
     </div>
   </div>
+  <card title="maybe new account" subtitle="fuuck" >
+      <collective-button :transparent="false" @click="goToHell">
+        Go to Hellaccount
+      </collective-button>
+    </card>
 </template>
 
 <script lang="ts">
@@ -74,6 +81,9 @@ export default defineComponent({
   methods: {
     goToAccount() {
       this.$router.push({ name: 'Account' })
+    },
+    goToHell() {
+      this.$router.push({ name: 'New' })
     },
   },
 })
