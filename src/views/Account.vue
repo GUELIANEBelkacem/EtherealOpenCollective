@@ -37,8 +37,12 @@
 
 
   <div class="mywrapper" v-if="account">
+    <div class="welcomecard">
     <card title="Welcome!!!"></card>
-
+    </div>
+    <div class = "tabs">
+    <app-tabs :tabList="tabList">
+      <template v-slot:tabPanel-1> 
 
     <spacer :size="24" />
 
@@ -201,23 +205,64 @@
           <p style="color:red;padding-left: 10px">Create your project</p>
         </router-link>
       </card>
+
+    
+  </template>
+  <template v-slot:tabPanel-2>
+
+    <card
+      title="All Users"
+      subtitle=""
+    >
+      <div class="explanations" >
+        <h2>All users</h2>
+        <div>
+          
+
+          <div class="container" style="border:1px solid #ccc"
+            
+            v-for="(member, index) in allusers"
+            v-bind:key="member"
+          >
+            
+            <p
+              :id="'tgm_' + index"
+              style="padding-left: 10px"
+            >
+
+              {{ getName(member, 'tgm_' + index) }}
+            </p>
+            <p><b> Address:  </b>{{ member }}</p>
+          </div>
+        </div>
+      </div>
+    </card>
+
+  </template>
+  </app-tabs>
     
   </div>
+  </div>
+  
+
+
 </template>
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 import { useStore } from 'vuex'
 import Card from '@/components/Card.vue'
+import AppTabs from "../components/AppTabs.vue";
 
 export default defineComponent({
-  components: { Card },
+  components: { Card, AppTabs },
   setup() {
     const store = useStore()
     const address = computed(() => store.state.account.address)
     const balance = computed(() => store.state.account.balance)
     const contract = computed(() => store.state.contract)
-    return { address, contract, balance }
+    const allusers = computed(() => store.state.contract.methods.getAllUsers().call())
+    return { address, contract, balance, allusers }
   },
   data() {
     const account = null
@@ -230,8 +275,12 @@ export default defineComponent({
     const memadrs = ''
     const memcon = ''
 
+    
+
     return {account, username, mbalance, orgAccount,
-     projects, showAddMember, showAddContributor, memadrs, memcon}
+     projects, showAddMember, showAddContributor, memadrs, memcon,
+     tabList: ["Page personnelle", "Affichage utilisateurs"],
+     }
   },
   methods: {
     goBack() {
@@ -353,6 +402,22 @@ export default defineComponent({
   border: none;
   padding: 12px;
   outline: none;
+  width: 100%;
+  align-content: center;
+  gap: 10px;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  font-family: inherit;
+  font-size: 1.3rem;
+}
+
+.tabs {
+  background: transparent;
+  border: none;
+  padding: 12px;
+  outline: none;
   width: 80%;
   align-content: center;
   gap: 10px;
@@ -362,6 +427,12 @@ export default defineComponent({
   color: white;
   font-family: inherit;
   font-size: 1.3rem;
+}
+
+.welcomecard{
+  text-align: center;
+  align-self: center;
+  width: 80%;
 }
 
 
