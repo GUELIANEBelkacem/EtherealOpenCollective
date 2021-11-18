@@ -41,8 +41,14 @@
     <card title="Welcome!!!"></card>
     </div>
     <div class = "tabs">
-    <app-tabs :tabList="tabList">
-      <template v-slot:tabPanel-1> 
+
+
+
+    <app-tabs :tabList="tabList" >
+      <template v-slot:tabPanel-1 class="tabiiies"> 
+
+
+
 
     <spacer :size="24" />
 
@@ -207,36 +213,74 @@
       </card>
 
     
+
+
+
   </template>
-  <template v-slot:tabPanel-2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <template v-slot:tabPanel-2 class="tabiiies">
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <card
       title="All Users"
       subtitle=""
     >
       <div class="explanations" >
-        <h2>All users</h2>
-        <div>
+        <button @click="hoo"></button>
+        
+        
           
 
-          <div class="container" style="border:1px solid #ccc"
-            
-            v-for="(member, index) in allusers"
-            v-bind:key="member"
-          >
-            
-            <p
-              :id="'tgm_' + index"
-              style="padding-left: 10px"
+            <div class="container" style="border:1px solid #ccc"
+              
+              v-for="(member, index) in alluserss"
+              v-bind:key="member"
             >
-
-              {{ getName(member, 'tgm_' + index) }}
-            </p>
-            <p><b> Address:  </b>{{ member }}</p>
-          </div>
-        </div>
+              
+              <p
+                :id="'tgmaaa_' + index"
+                style="padding-left: 10px"
+              >
+                
+                {{ getName(member, 'tgmaaa_' + index) }}
+              </p>
+              <p><b> Address:  </b>{{ member }}</p>
+            </div>
+        
       </div>
     </card>
+
+
+
+
+
+
+
 
   </template>
   </app-tabs>
@@ -244,7 +288,6 @@
   </div>
   </div>
   
-
 
 </template>
 
@@ -261,8 +304,7 @@ export default defineComponent({
     const address = computed(() => store.state.account.address)
     const balance = computed(() => store.state.account.balance)
     const contract = computed(() => store.state.contract)
-    const allusers = computed(() => store.state.contract.methods.getAllUsers().call())
-    return { address, contract, balance, allusers }
+    return { address, contract, balance }
   },
   data() {
     const account = null
@@ -274,12 +316,14 @@ export default defineComponent({
     const showAddContributor = false;
     const memadrs = ''
     const memcon = ''
+    const allusers: any[] = []
 
     
 
     return {account, username, mbalance, orgAccount,
      projects, showAddMember, showAddContributor, memadrs, memcon,
-     tabList: ["Page personnelle", "Affichage utilisateurs"],
+     tabList: ["Account", "Explore"],
+     allusers
      }
   },
   methods: {
@@ -289,6 +333,12 @@ export default defineComponent({
     async updateAccount() {
       const { address, contract } = this
       this.account = await contract.methods.getUser(address).call()
+    
+    },
+    async updateAllUsers() {
+      const { contract } = this
+      this.allusers = await contract.methods.getAllUsers().call()
+    
     },
     async updateOrgAccount() {
       const { address, contract } = this
@@ -343,8 +393,14 @@ export default defineComponent({
       this.showAddContributor = false
       await this.updateProjects()
     },
+    hoo(){  
+      const {allusers } = this;
+      this.allusers = allusers;
+      console.log("fuuuuuuuuuuuuuuck")
+      console.log(this.allusers)
+    },
 
-    getName(adrs:any, idd:any){
+    getName(adrs:any, idd:any){  
         const {contract } = this;
         contract.methods.getUser(adrs).call()
           .then((res:any) =>{
@@ -362,6 +418,8 @@ export default defineComponent({
     if (orgAccount.name) this.orgAccount = orgAccount
     const projects = await contract.methods.getProject(address).call()
     if (projects.length > 0) this.projects = projects
+    const allusers = await contract.methods.getAllUsers().call()
+    if (allusers.length > 0) this.allusers = allusers
   },
 })
 </script>
@@ -518,5 +576,9 @@ button:hover {
   .cancelbtn, .signupbtn {
     width: 100%;
   }
+}
+
+.tabiiies{
+  width: 900px;
 }
 </style>
