@@ -152,16 +152,16 @@
           <b>Contributors:</b>
           <div class="container" style="border:1px solid #ccc"
             
-            v-for="contributor in project.contributors"
+            v-for="(contributor, index2) in project.contributors"
             v-bind:key="contributor.address"
           >
             
             <p
-              :id="'tgmm_' + index"
+              :id="'tgmm_' + index2+'_' + index"
               style="padding-left: 10px"
             >
 
-              {{ getName(contributor, 'tgmm_' + index) }}
+              {{ getName(contributor, 'tgmm_' + index2+'_' + index) }}
             </p>
             <p><b> Address:  </b>{{ contributor }}</p>
           </div>
@@ -292,7 +292,7 @@ export default defineComponent({
       await contract.methods.addContributor(adr.value, idx).send()
       this.memcon = ''
       this.showAddContributor = false
-      //await this.updateProjects()
+      await this.updateProjects()
     },
 
     getName(adrs:any, idd:any){
