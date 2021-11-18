@@ -28,6 +28,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'NewOrg',
     component: () => import('@/views/NewOrg.vue'),
   },
+  {
+    path: '/newproject',
+    name: 'NewProject',
+    component: () => import('@/views/NewProject.vue'),
+  },
 ]
 
 const router = createRouter({

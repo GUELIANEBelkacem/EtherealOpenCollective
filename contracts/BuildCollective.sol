@@ -97,6 +97,16 @@ contract BuildCollective is Ownable {
   }
 
 
+  function addMember(address _member) public{
+    require(users[msg.sender].registered, "User Not Found");
+    require(users[_member].registered, "Member Not Found");
+    orgs[msg.sender].members.push(_member);
+  }
 
+  function addContributor(address _member, uint256 _idx) public{
+    require(users[msg.sender].registered, "User Not Found");
+    require(users[_member].registered, "Member Not Found");
+    projects[msg.sender][_idx].contributors.push(_member);
+  }
 
 }

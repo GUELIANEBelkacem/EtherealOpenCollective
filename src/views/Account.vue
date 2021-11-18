@@ -75,28 +75,54 @@
     >
       <div class="explanations" >
         <h2>{{orgAccount.name}}</h2>
-        <p id='mama'><b>Owner: </b>{{ getName(orgAccount.owner) }}</p>
+        <p ><b>Owner: </b> <span id='mama'>{{ getName(orgAccount.owner,'mama') }}</span></p>
         <p><b>Owner's Address: </b>{{ address }}</p>
+        <p><b>Balance: </b>{{ orgAccount.balance }} T</p>
         <div>
           <b>Members: </b>
-          <p
-            v-for="member in orgAccount.members"
-            v-bind:key="member.address"
-            style="padding-left: 10px"
+
+          <div class="container" style="border:1px solid #ccc"
+            
+            v-for="(member, index) in orgAccount.members"
+            v-bind:key="member"
           >
-            Account Name: {{ member.account.username }} &nbsp; Address:
-            {{ member.address }}
-          </p>
+            
+            <p
+              :id="'tgm_' + index"
+              style="padding-left: 10px"
+            >
+
+              {{ getName(member, 'tgm_' + index) }}
+            </p>
+            <p><b> Address:  </b>{{ member }}</p>
+          </div>
+
+
+    
         </div>
-        <p><b>Balance: </b>{{ orgAccount.balance }} T</p>
+
+        <button @click="flipMember">Add a Member</button>
+
+
+        <div class="container" v-if="showAddMember">
+          <form id="signup-form" style="border:1px solid #ccc" @submit.prevent="addMember">
+            <div class="container">
+              <label for="name"><b>Paste Member Address and Hit Enter</b></label>
+              <input type="text" v-model="memadrs" placeholder="Member Address" name="name" required>
+
+            </div>
+          </form>
+        </div>
+
+
       </div>
     </card>
 
     <card
         title="Organisation"
-        subtitle="Do you own a Company/Organisation?"
+        subtitle="Do you have a Company/Organisation?"
         :blue="false"
-        v-if="!enterpriseAccount"
+        v-if="!orgAccount"
       >
         <router-link class="card-body" to="/NewOrg">
            <p style="color:red;padding-left: 10px">Add Your Company/Organisation</p>
@@ -117,27 +143,52 @@
     >
       <div
         class="explanations"
-        v-for="project in projects"
+        v-for="(project, index) in projects"
         v-bind:key="project.name"
       >
         <h2>{{ project.name }}</h2>
-        <p><b>Owner: </b>{{account.username}}</p>
+        <p><b>Owner: </b><span :id="'sp_' + index">{{ getName(orgAccount.owner,'sp_' + index) }}</span></p>
         <div>
           <b>Contributors:</b>
-          <p
+          <div class="container" style="border:1px solid #ccc"
+            
             v-for="contributor in project.contributors"
             v-bind:key="contributor.address"
-            style="padding-left: 15px"
           >
-          <!--
-            Account Name: {{ contributor.account.username }} &nbsp; Address:
-            {{ contributor.address }}
-            -->
-            helloooooooooo
-          </p>
+            
+            <p
+              :id="'tgmm_' + index"
+              style="padding-left: 10px"
+            >
+
+              {{ getName(contributor, 'tgmm_' + index) }}
+            </p>
+            <p><b> Address:  </b>{{ contributor }}</p>
+          </div>
+
+
+    
         </div>
+          
+      
         <p><b>Balance of Project: </b>{{ project.balance }} T</p>
+
+        
+
+
+        <div class="container" v-if="showAddContributor">
+          <form id="signup-form" style="border:1px solid #ccc" @submit.prevent="addContributor('in_' + index, index)">
+            <div class="container">
+              <label for="name"><b>Paste Contributor Address and Hit Enter</b></label>
+              <input type="text" :id="'in_' + index" placeholder="Contributor Address" name="name" required>
+
+            </div>
+          </form>
+        </div>
+
+
       </div>
+      <button @click="flipContributor">Add a Member</button>
     </card>
 
 
@@ -146,7 +197,7 @@
         subtitle=""
         :blue="false"
       >
-        <router-link class="card-body" to="/NewOrg">
+        <router-link class="card-body" to="/NewProject">
           <p style="color:red;padding-left: 10px">Create your project</p>
         </router-link>
       </card>
@@ -174,7 +225,13 @@ export default defineComponent({
     const mbalance = 0
     const orgAccount = null;
     const projects: any[] = [];
-    return {account, username, mbalance, orgAccount, projects}
+    const showAddMember = false;
+    const showAddContributor = false;
+    const memadrs = ''
+    const memcon = ''
+
+    return {account, username, mbalance, orgAccount,
+     projects, showAddMember, showAddContributor, memadrs, memcon}
   },
   methods: {
     goBack() {
@@ -184,14 +241,25 @@ export default defineComponent({
       const { address, contract } = this
       this.account = await contract.methods.getUser(address).call()
     },
-    async updateEnterpriseAccount() {
+    async updateOrgAccount() {
       const { address, contract } = this
       this.orgAccount = await contract.methods
-        .getOrgs(address)
+        .getOrg(address)
         .call()
+        console.log(this.orgAccount)
     },
-    getMembersAccount(addressMember: string) {
-      return this.contract.methods.getUserByAddress(addressMember).call()
+    async updateProjects() {
+      const { address, contract } = this
+      this.projects = await contract.methods
+        .getProject(address)
+        .call()
+      console.log(this.projects)
+    },
+    flipMember() {
+      this.showAddMember = !this.showAddMember;
+    },
+    flipContributor() {
+      this.showAddContributor = !this.showAddContributor;
     },
     async signUp() {
       
@@ -210,12 +278,28 @@ export default defineComponent({
       await contract.methods.addBalance(200).send()
       await this.updateAccount()
     },
+    async addMember() {
+      const { contract } = this
+      const adr = this.memadrs;
+      await contract.methods.addMember(adr).send()
+      this.memadrs = ''
+      this.showAddMember = false
+      await this.updateOrgAccount()
+    },
+    async addContributor(idd:any, idx:any) {
+      const { contract } = this
+      const adr = document.getElementById(idd) as HTMLInputElement;
+      await contract.methods.addContributor(adr.value, idx).send()
+      this.memcon = ''
+      this.showAddContributor = false
+      //await this.updateProjects()
+    },
 
-    getName(adrs:any){
+    getName(adrs:any, idd:any){
         const {contract } = this;
         contract.methods.getUser(adrs).call()
           .then((res:any) =>{
-              document.getElementById('mama')!.textContent = "Owner: " +res.username
+              document.getElementById(idd)!.textContent = ""+res.username
           });
     }
   },
@@ -226,7 +310,9 @@ export default defineComponent({
     const orgAccount = await contract.methods.getOrg(address).call()
     console.log(orgAccount)
     console.log(address)
-    if (orgAccount.owner) this.orgAccount = orgAccount
+    if (orgAccount.name) this.orgAccount = orgAccount
+    const projects = await contract.methods.getProject(address).call()
+    if (projects.length > 0) this.projects = projects
   },
 })
 </script>

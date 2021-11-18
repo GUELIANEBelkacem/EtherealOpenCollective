@@ -4,15 +4,15 @@
   <div class="home">
    <form id="signup-form" style="border:1px solid #ccc">
       <div class="container">
-        <h1>Create an Organisation</h1>
-        <p>Please fill in this form to create an Organisation Account</p>
+        <h1>Create a Project</h1>
+        <p>Please fill in this form to create a Project.</p>
         <hr>
 
         <label for="name"><b>Name</b></label>
-        <input type="text" v-model="oname" placeholder="Organisation Name" name="name" required>
+        <input type="text" v-model="pname" placeholder="Project Name" name="name" required>
 
         <label for="balance"><b>Balance</b></label>
-        <input type="number" v-model="mbalance" min=0 placeholder="Initial Balance" name="balance">
+        <input type="number" v-model="mbalance" min=0 placeholder="Initial Balance" name="balance" required>
 
 
         <div class="clearfix">
@@ -33,7 +33,7 @@ import { useStore } from 'vuex'
 
 export default defineComponent({
 
-  name: 'NewOrg',
+  name: 'NewProject',
   setup() {
     const store = useStore()
     const address = computed(() => store.state.account.address)
@@ -41,10 +41,10 @@ export default defineComponent({
     return {contract, address}
   },
   data() {
-    const oname = ''
+    const pname = ''
     const mbalance = 0
-    const members: any[] = []
-    return {oname, mbalance, members};
+    const contributors: any[] = []
+    return {pname, mbalance, contributors};
   },
   methods: {
     goBack() {
@@ -61,12 +61,12 @@ export default defineComponent({
     async submit(){
       const { contract, address} = this
       console.log(address)
-      const ooname = this.oname.trim().replace(/ /g, '_')
+      const ooname = this.pname.trim().replace(/ /g, '_')
       const mmbalance = (!this.mbalance)? 0 : this.mbalance;
 
 
       await contract.methods
-        .orgSignUp(ooname, address, this.members, mmbalance)
+        .addProject(ooname, address, this.contributors, mmbalance)
         .send()
     
       await this.$router.push({ name: 'Account' })
