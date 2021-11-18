@@ -322,10 +322,13 @@ export default defineComponent({
   padding: 24px;
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
+  width: 100%;
   max-width: 500px;
   margin: auto;
+  align-items: center;
+  align-self: center;
 }
 
 .explanations {
@@ -350,7 +353,12 @@ export default defineComponent({
   border: none;
   padding: 12px;
   outline: none;
-  width: 100%;
+  width: 80%;
+  align-content: center;
+  gap: 10px;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
   color: white;
   font-family: inherit;
   font-size: 1.3rem;
