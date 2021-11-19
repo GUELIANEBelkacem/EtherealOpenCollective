@@ -388,7 +388,7 @@
                     >
                       <div class="explanations" >
                         <h2>{{selectedOrgAccount.name}}</h2>
-                        <p ><b>Owner: </b> <span id='mama'>{{ getName(selectedOrgAccount.owner,'mama') }}</span></p>
+                        <p ><b>Owner: </b> <span id='mamaz'>{{ getName(selectedOrgAccount.owner,'mamaz') }}</span></p>
                         <p><b>Owner's Address: </b>{{ selectedAddress }}</p>
                         
                         <div>

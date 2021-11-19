@@ -17,30 +17,33 @@ contract BuildCollective is Ownable {
     uint256 balance;
   }
 
+  struct Bug {
+    string title;
+    string description;
+    uint256 reward; 
+    string[] proposals;
+    address[] proposers;
+    string fix;
+    bool pending;
+    bool resolved; 
+    uint256 projId;
+  }
+
   struct Project{
     string name;
     address owner;
     address[] contributors;
     uint256 balance;
+    uint256 bugId;
   }
 
- 
-   struct ProjectRef{
-    address owner;
-    uint256 idxs;
-  }
-  struct Issue {
-    string title;
-    string description;
-    string link;
-    address owner; 
-    uint256 reward; 
-    bool resolved; 
-  }
+
+  uint256 private pid = 0;
 
   mapping(address => User) private users;
   mapping(address => Org) private orgs; 
   mapping(address => Project[]) private projects;
+  mapping(address => Bug[]) private bugs;
 
   address[] public userReg;
 
@@ -70,6 +73,10 @@ contract BuildCollective is Ownable {
 
   function getProject(address _address) public view returns (Project[] memory){
     return projects[_address];
+  }
+
+  function getBugs(address _address) public view returns (Bug[] memory){
+    return bugs[_address];
   }
 
   function getOrgRefs(address _address) public view returns (Org[] memory){
@@ -104,7 +111,8 @@ contract BuildCollective is Ownable {
     require(users[msg.sender].registered, "User Not Found");
     require(bytes(_name).length > 0, "Project Name Is Empty");
     require(users[msg.sender].balance >= _balance, "Balace not Sufficient");
-    Project memory proj = Project(_name, _owner, _contributors, _balance);
+    Project memory proj = Project(_name, _owner, _contributors, _balance, pid);
+    pid++;
     projects[msg.sender].push(proj);
     emit ProjectCreated(msg.sender, proj);
     users[msg.sender].balance = users[msg.sender].balance - _balance;
@@ -141,10 +149,46 @@ contract BuildCollective is Ownable {
     users[msg.sender].balance = users[msg.sender].balance - _amount;
   }
 
+
+
+  function addBug(uint256 _bugid, string memory _title, string memory _description, uint256 _reward) public{
+    require(users[msg.sender].registered, "User Not Found");
+    require(users[msg.sender].balance >= _reward, "Balace not Sufficient");
+    string[] memory proposals;
+    address[] memory proposers;
+    string memory fix;
+    bool  pending = false;
+    bool resolved = false;
+    Bug memory bug = Bug(_title, _description, _reward, proposals, proposers, fix, pending, resolved, _bugid);
+    bugs[msg.sender].push(bug); 
+    users[msg.sender].balance = users[msg.sender].balance - _reward; 
+  }
+
+  function proposeFix(address _owner, uint256 _idx, string memory _fix) public{
+    bugs[msg.sender][_idx].proposals.push(_fix); 
+    bugs[msg.sender][_idx].proposers.push(msg.sender); 
+    bugs[msg.sender][_idx].pending = true;
+  }
+
+  function acceptFix(uint256 _idx, address _proposer) public{
+    bugs[msg.sender][_idx].resolved = true; 
+    bugs[msg.sender][_idx].fix = bugs[msg.sender][_idx].proposals[findIdx(bugs[msg.sender][_idx].proposers, _proposer)];
+    users[_proposer].balance += bugs[msg.sender][_idx].reward;
+  }
+
+     
+
   function listContains(address[] memory lst, address a) private returns(bool){
     bool r = false;
     for (uint i=0; i<lst.length; i++) {
         if(lst[i] == a){r = true;}  
+    }
+    return r;
+  }
+  function findIdx(address[] memory lst, address a) private returns(uint256){
+    uint256 r = 0;
+    for (uint i=0; i<lst.length; i++) {
+        if(lst[i] == a){r = i;}  
     }
     return r;
   }
