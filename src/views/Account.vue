@@ -63,7 +63,18 @@
         <p><b>Balance: </b>{{ account.balance }}</p>
         <p><b>Address: </b>{{ address }}</p>
         <p><b>ETH: </b>{{ balance }}</p>
+
+        <div class="container" v-if="showAddBalance">
+          <form id="signup-form" style="border:1px solid #ccc" @submit.prevent="addBalance">
+            <div class="container">
+              <label for="name"><b>Add Some Tokens and Hit Enter</b></label>
+              <input type="number" min="1"  v-model="membalance" placeholder="Tokens" name="name" required>
+
+            </div>
+          </form>
+        </div>
       </div>
+      <button @click="flipBalance">Add to the Balance</button>
     </card>
 
 
@@ -122,6 +133,18 @@
 
             </div>
           </form>
+        </div>
+
+
+        <div v-if="orgrefs.length>0">
+          <h2>Associated Organisations: </h2>
+          <div class="container" style="border:1px solid #ccc" v-for="(org, index) in orgrefs"
+            v-bind:key="org.name"
+          >
+            <p style="padding-left: 10px">Name: {{ org.name }}</p>
+            <p style="padding-left: 10px">Owner: <span :id="'oref_' + index" >  {{getName(org.owner,'oref_' + index) }}</span></p>
+            <p style="padding-left: 10px">Owner Adress: {{ org.owner }}</p>
+          </div>
         </div>
 
 
@@ -199,6 +222,17 @@
 
       </div>
       <button @click="flipContributor">Add a Member</button>
+
+        <div v-if="projectrefs.length>0">
+          <h2>Associated Projects: </h2>
+          <div class="container" style="border:1px solid #ccc" v-for="(proj, index) in projectrefs"
+            v-bind:key="proj.name"
+          >
+            <p style="padding-left: 10px">Name: {{ proj.name }}</p>
+            <p style="padding-left: 10px">Owner: <span :id="'prref_' + index" >  {{getName(proj.owner,'prref_' + index) }}</span></p>
+            <p style="padding-left: 10px">Owner Adress: {{ proj.owner }}</p>
+          </div>
+        </div>
     </card>
 
 
@@ -246,34 +280,201 @@
 
 
 
-    <card
-      title="All Users"
-      subtitle=""
-    >
-      <div class="explanations" >
-        <button @click="hoo"></button>
-        
-        
+  
+      <div @click="flipAllUsers" style="cursor: pointer">
+        <card
+          title="All Users"
+          subtitle=""
+        >
+        </card>
+      </div>
+      <card
+        title=""
+        subtitle=""
+      >
+      
+        <div class="explanations" v-if="showAllUsers">
+          
           
 
-            <div class="container" style="border:1px solid #ccc"
-              
-              v-for="(member, index) in alluserss"
-              v-bind:key="member"
-            >
-              
-              <p
-                :id="'tgmaaa_' + index"
-                style="padding-left: 10px"
-              >
+
+
+
+
+
+
+
+
+
+            
+            
+  
+              <div class="container" style="border:1px solid #ccc"
                 
-                {{ getName(member, 'tgmaaa_' + index) }}
-              </p>
-              <p><b> Address:  </b>{{ member }}</p>
-            </div>
+                v-for="(member, index) in allusers"
+                v-bind:key="member"
+              >
+
+                    <div @click="openProfile(member)" style="cursor: pointer">
+                    <p
+                    :id="'tgmaaaa_' + index"
+                    style="padding-left: 10px"
+                    >
+                    
+                    {{ getName(member, 'tgmaaaa_' + index) }}
+                    </p>
+                    <p><b> Address:  </b>{{ member }}</p>
+    
+                    </div>
+              </div>
+              
+        </div>
+
+      </card>
+
+
+
+
+
+              <div class="mywrapper" v-if="selectedProfile" @click="hoo">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+
+
+                  <spacer :size="24" />
+  
+  
+                    <card 
+                      title="Account"
+                      subtitle=""
+                      :gradient="true"
+                    >
+                      <div class="explanations">
+                        <h2><b>{{ selectedProfile.username }}</b></h2>
+                        
+                        <p><b>Address: </b>{{ selectedAddress }}</p>
+                      </div>
+                    </card>
+  
+  
+  
+  
+                    <spacer :size="24" />
+  
+  
+  
+  
+  
+  
+  
+  
+                    <card
+                      title="Organisation"
+                      subtitle=""
+                      v-if="selectedOrgAccount"
+                    >
+                      <div class="explanations" >
+                        <h2>{{selectedOrgAccount.name}}</h2>
+                        <p ><b>Owner: </b> <span id='mama'>{{ getName(selectedOrgAccount.owner,'mama') }}</span></p>
+                        <p><b>Owner's Address: </b>{{ selectedAddress }}</p>
+                        
+                        <div>
+                          <b>Members: </b>
+  
+                          <div class="container" style="border:1px solid #ccc"
+                            
+                            v-for="(member, index) in selectedOrgAccount.members"
+                            v-bind:key="member"
+                          >
+                            
+                            <p
+                              :id="'tgm_' + index"
+                              style="padding-left: 10px"
+                            >
+  
+                              {{ getName(member, 'tgm_' + index) }}
+                            </p>
+                            <p><b> Address:  </b>{{ member }}</p>
+                          </div>
+  
+  
+                    
+                        </div>
+  
+                        
+  
+  
+                      </div>
+
+                      
+                    </card>
+  
+      
         
-      </div>
-    </card>
+                     <spacer :size="24" />
+  
+  
+  
+  
+  
+  
+  
+                    <card
+                      title="Projects"
+                      v-if="selectedProjects"
+                    >
+
+
+
+
+                      <div
+                        class="explanations"
+                        v-for="(project, index) in selectedProjects"
+                        v-bind:key="project.name"
+                      >
+                        <h2>{{ project.name }}</h2>
+                        <p><b>Owner: </b><span :id="'sp_' + index">{{ getName(selectedOrgAccount.owner,'sp_' + index) }}</span></p>
+                        <div>
+                          <b>Contributors:</b>
+                          <div class="container" style="border:1px solid #ccc"
+                            
+                            v-for="(contributor, index2) in project.contributors"
+                            v-bind:key="contributor.address"
+                          >
+                            
+                            <p
+                              :id="'tgmm_' + index2+'_' + index"
+                              style="padding-left: 10px"
+                            >
+  
+                              {{ getName(contributor, 'tgmm_' + index2+'_' + index) }}
+                            </p>
+                            <p><b> Address:  </b>{{ contributor }}</p>
+                          </div>
+  
+  
+                    
+                        </div>
+                          
+                      
+                        <p><b>Balance of Project: </b>{{ project.balance }} T</p>
+  
+                        </div>
+  
+                    </card>
 
 
 
@@ -281,6 +482,38 @@
 
 
 
+                </div>
+  
+        
+  
+
+
+
+
+
+
+
+
+
+
+      
+          
+          
+        
+
+
+
+
+
+
+     
+  
+  
+  
+  
+  
+  
+  
 
   </template>
   </app-tabs>
@@ -314,16 +547,25 @@ export default defineComponent({
     const projects: any[] = [];
     const showAddMember = false;
     const showAddContributor = false;
+    const showAddBalance = false;
     const memadrs = ''
     const memcon = ''
+    const membalance = 1
     const allusers: any[] = []
-
+    const orgrefs: any[] = []
+    const projectrefs: any[] = []
+    const selectedProfile = null;
+    const selectedAddress = "";
+    const selectedOrgAccount = null;
+    const selectedProjects: any[] = [];
+    const showAllUsers = true;
     
 
     return {account, username, mbalance, orgAccount,
      projects, showAddMember, showAddContributor, memadrs, memcon,
      tabList: ["Account", "Explore"],
-     allusers
+     allusers, membalance, showAddBalance, orgrefs, projectrefs,
+     selectedProfile, selectedAddress, selectedOrgAccount, selectedProjects, showAllUsers
      }
   },
   methods: {
@@ -333,6 +575,7 @@ export default defineComponent({
     async updateAccount() {
       const { address, contract } = this
       this.account = await contract.methods.getUser(address).call()
+      this.updateAllUsers() 
     
     },
     async updateAllUsers() {
@@ -357,8 +600,19 @@ export default defineComponent({
     flipMember() {
       this.showAddMember = !this.showAddMember;
     },
+    flipBalance() {
+      this.showAddBalance = !this.showAddBalance;
+      console.log("refs")
+      console.log(this.orgrefs)
+      console.log(this.projectrefs)
+    },
     flipContributor() {
       this.showAddContributor = !this.showAddContributor;
+      console.log(this.orgrefs)
+      console.log(this.projectrefs)
+    },
+    flipAllUsers() {
+      this.showAllUsers = !this.showAllUsers;
     },
     async signUp() {
       
@@ -377,6 +631,14 @@ export default defineComponent({
       await contract.methods.addBalance(200).send()
       await this.updateAccount()
     },
+    async addBalance() {
+      const { contract } = this
+      const tok = (this.membalance && this.membalance>0)? this.membalance:0;
+      await contract.methods.addBalance(tok).send()
+      this.membalance = 1 
+      this.showAddBalance = false
+      await this.updateAccount()
+    },
     async addMember() {
       const { contract } = this
       const adr = this.memadrs;
@@ -392,6 +654,16 @@ export default defineComponent({
       this.memcon = ''
       this.showAddContributor = false
       await this.updateProjects()
+    },
+    async openProfile(adr:any){
+      const { contract } = this
+      this.selectedAddress = adr
+      this.selectedOrgAccount = await contract.methods
+        .getOrg(adr)
+        .call()
+      this.selectedProjects = await contract.methods.getProject(adr).call()
+      this.selectedProfile = await contract.methods.getUser(adr).call()
+      this.showAllUsers = false;
     },
     hoo(){  
       const {allusers } = this;
@@ -420,6 +692,10 @@ export default defineComponent({
     if (projects.length > 0) this.projects = projects
     const allusers = await contract.methods.getAllUsers().call()
     if (allusers.length > 0) this.allusers = allusers
+    const orgrefs = await contract.methods.getOrgRefs(address).call()
+    const projectrefs = await contract.methods.getProjectRefs(address).call()
+    if (orgrefs.length > 0) this.orgrefs = orgrefs
+    if (projectrefs.length > 0) this.projectrefs = projectrefs
   },
 })
 </script>

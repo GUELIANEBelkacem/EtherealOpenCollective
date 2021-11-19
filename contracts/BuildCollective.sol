@@ -24,6 +24,11 @@ contract BuildCollective is Ownable {
     uint256 balance;
   }
 
+ 
+   struct ProjectRef{
+    address owner;
+    uint256 idxs;
+  }
   struct Issue {
     string title;
     string description;
@@ -38,6 +43,10 @@ contract BuildCollective is Ownable {
   mapping(address => Project[]) private projects;
 
   address[] public userReg;
+
+
+  mapping(address => Org[]) private orgrefs; 
+  mapping(address => Project[]) private projectrefs; 
 
 
 
@@ -63,10 +72,18 @@ contract BuildCollective is Ownable {
     return projects[_address];
   }
 
+  function getOrgRefs(address _address) public view returns (Org[] memory){
+    return orgrefs[_address];
+  }
+  function getProjectRefs(address _address) public view returns (Project[] memory){
+    return projectrefs[_address];
+  }
+
 
 
   function signUp(string memory _name, uint256 _balance) public returns (User memory) {
     require(bytes(_name).length > 0, "User Name Is Empty");
+    require(!listContains(userReg, msg.sender), "User Already Exists");
     users[msg.sender] = User(_name, _balance, true);
     emit UserSignedUp(msg.sender, users[msg.sender]);
     userReg.push(msg.sender);
@@ -76,17 +93,21 @@ contract BuildCollective is Ownable {
   function orgSignUp(string memory _name, address _owner, address[] memory _members, uint256 _balance) public returns (Org memory) {
     require(users[msg.sender].registered, "User Not Found");
     require(bytes(_name).length > 0, "Org Name Is Empty");
+    require(users[msg.sender].balance >= _balance, "Balace not Sufficient");
     orgs[msg.sender] = Org(_name, _owner, _members, _balance);
     emit OrgSignedUp(msg.sender, orgs[msg.sender]);
+    users[msg.sender].balance = users[msg.sender].balance - _balance;
     return orgs[msg.sender];
   }
 
   function addProject(string memory _name, address _owner, address[] memory _contributors, uint256 _balance) public returns (Project memory) {
     require(users[msg.sender].registered, "User Not Found");
     require(bytes(_name).length > 0, "Project Name Is Empty");
+    require(users[msg.sender].balance >= _balance, "Balace not Sufficient");
     Project memory proj = Project(_name, _owner, _contributors, _balance);
     projects[msg.sender].push(proj);
     emit ProjectCreated(msg.sender, proj);
+    users[msg.sender].balance = users[msg.sender].balance - _balance;
     return proj;
   }
 
@@ -100,13 +121,32 @@ contract BuildCollective is Ownable {
   function addMember(address _member) public{
     require(users[msg.sender].registered, "User Not Found");
     require(users[_member].registered, "Member Not Found");
+    require(!listContains(orgs[msg.sender].members, _member), "Member Already Exists");
     orgs[msg.sender].members.push(_member);
+    orgrefs[_member].push(orgs[msg.sender]);
   }
 
   function addContributor(address _member, uint256 _idx) public{
     require(users[msg.sender].registered, "User Not Found");
     require(users[_member].registered, "Member Not Found");
+    require(!listContains(projects[msg.sender][_idx].contributors, _member), "Contributor Already Exists");
     projects[msg.sender][_idx].contributors.push(_member);
+    projectrefs[_member].push(projects[msg.sender][_idx]);
+  }
+
+  function donateProject(address _owner, uint256 _idx, uint256 _amount) public{
+    require(users[msg.sender].registered, "User Not Found");
+    require(users[msg.sender].balance >= _amount, "Balace not Sufficient");
+    projects[_owner][_idx].balance += _amount;
+    users[msg.sender].balance = users[msg.sender].balance - _amount;
+  }
+
+  function listContains(address[] memory lst, address a) private returns(bool){
+    bool r = false;
+    for (uint i=0; i<lst.length; i++) {
+        if(lst[i] == a){r = true;}  
+    }
+    return r;
   }
 
 }

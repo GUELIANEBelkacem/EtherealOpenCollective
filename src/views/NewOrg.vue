@@ -64,10 +64,8 @@ export default defineComponent({
       const ooname = this.oname.trim().replace(/ /g, '_')
       const mmbalance = (!this.mbalance)? 0 : this.mbalance;
 
-
-      await contract.methods
-        .orgSignUp(ooname, address, this.members, mmbalance)
-        .send()
+      this.members.push(address)
+      await contract.methods.orgSignUp(ooname, address, this.members, mmbalance).send()
     
       await this.$router.push({ name: 'Account' })
      

@@ -64,7 +64,7 @@ export default defineComponent({
       const ooname = this.pname.trim().replace(/ /g, '_')
       const mmbalance = (!this.mbalance)? 0 : this.mbalance;
 
-
+      this.contributors.push(address)
       await contract.methods
         .addProject(ooname, address, this.contributors, mmbalance)
         .send()
