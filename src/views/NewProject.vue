@@ -50,17 +50,10 @@ export default defineComponent({
     goBack() {
       this.$router.push({ name: 'Account' })
     },
-    /*
-    async updateEnterpriseAccount() {
-      const { contract, address  } = this
-      this.enterpriseAccount = await contract.methods
-        .getEnterpriseByAddress(address)
-        .call()
-    },
-    */
+    
     async submit(){
       const { contract, address} = this
-      console.log(address)
+     
       const ooname = this.pname.trim().replace(/ /g, '_')
       const mmbalance = (!this.mbalance)? 0 : this.mbalance;
 

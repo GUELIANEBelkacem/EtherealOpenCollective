@@ -165,9 +165,9 @@ contract BuildCollective is Ownable {
   }
 
   function proposeFix(address _owner, uint256 _idx, string memory _fix) public{
-    bugs[msg.sender][_idx].proposals.push(_fix); 
-    bugs[msg.sender][_idx].proposers.push(msg.sender); 
-    bugs[msg.sender][_idx].pending = true;
+    bugs[_owner][_idx].proposals.push(_fix); 
+    bugs[_owner][_idx].proposers.push(msg.sender); 
+    bugs[_owner][_idx].pending = true;
   }
 
   function acceptFix(uint256 _idx, address _proposer) public{

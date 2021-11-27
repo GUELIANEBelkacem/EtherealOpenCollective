@@ -60,7 +60,7 @@
     >
       <div class="explanations">
         <h2><b>{{ account.username }}</b></h2>
-        <p><b>Balance: </b>{{ account.balance }}</p>
+        <p><b>Balance: </b>{{ account.balance }} BC Tokens</p>
         <p><b>Address: </b>{{ address }}</p>
         <p><b>ETH: </b>{{ balance }}</p>
 
@@ -98,7 +98,7 @@
         <h2>{{orgAccount.name}}</h2>
         <p ><b>Owner: </b> <span id='mama'>{{ getName(orgAccount.owner,'mama') }}</span></p>
         <p><b>Owner's Address: </b>{{ address }}</p>
-        <p><b>Balance: </b>{{ orgAccount.balance }} T</p>
+        <p><b>Balance: </b>{{ orgAccount.balance }} BC Tokens</p>
         <div>
           <b>Members: </b>
 
@@ -174,15 +174,21 @@
       title="Projects"
       v-if="projects.length >0"
     >
+    <card
+      v-for="(project, index) in projects"
+      v-bind:key="project.name"
+      :title="project.name"
+      :blue="true"
+    >
       <div
-        class="explanations"
-        v-for="(project, index) in projects"
-        v-bind:key="project.name"
+        class="container"
+        
       >
-        <h2>{{ project.name }}</h2>
-        <p><b>Owner: </b><span :id="'sp_' + index">{{ getName(orgAccount.owner,'sp_' + index) }}</span></p>
+        
+        <p><b>Owner: </b><span :id="'sp_' + index">{{ getName(project.owner,'sp_' + index) }}</span></p>
         <div>
-          <b>Contributors:</b>
+          <p><b>Balance of Project: </b>{{ project.balance }} BC Tokens</p>
+          <h2>Contributors:</h2>
           <div class="container" style="border:1px solid #ccc"
             
             v-for="(contributor, index2) in project.contributors"
@@ -203,11 +209,8 @@
     
         </div>
           
-      
-        <p><b>Balance of Project: </b>{{ project.balance }} T</p>
-
         
-
+        
 
         <div class="container" v-if="showAddContributor">
           <form id="signup-form" style="border:1px solid #ccc" @submit.prevent="addContributor('in_' + index, index)">
@@ -219,10 +222,59 @@
           </form>
         </div>
 
+        <button @click="flipContributor">Add a Member</button>
+
+
+        <div v-if="getBugsById(project.bugId)">
+          <h2>Bugs: </h2>
+          <div class="container" style="border:1px solid #ccc" v-for="bugg in getBugsById(project.bugId)"
+            v-bind:key="bugg.title"
+          >
+            <p style="padding-left: 10px">Title: {{ bugg.title }}</p>
+            <p style="padding-left: 10px">Description: {{ bugg.description }}</p>
+            <p style="padding-left: 10px">Bounty: {{ bugg.reward }}</p>
+            <h3 v-if="bugg.proposals.length>0" style="padding-left: 10px">Proposals:</h3>
+                <div class="container"  style="border:1px solid #ccc;margin-left: 20px" v-for="(ppsl, indexf) in bugg.proposals"
+                v-bind:key="ppsl"
+                >
+
+                  <p style="padding-left: 10px">{{ ppsl }}</p>
+                  <button v-if="!bugg.resolved" @click="acceptFix(bugg, bugg.proposers[indexf])">Accept Fix</button>
+                  
+                </div>
+            <div class="container" style="padding-left: 10px;background-color: green" v-if="bugg.resolved">
+            <p >Resolved with:</p>
+            <p >{{ bugg.fix }}</p>
+            </div>
+          </div>
+        </div>
+
+        
+      <div class="container" v-if="showAddBugs">
+          <form id="signup-form" style="border:1px solid #ccc" @submit.prevent="addBug('inbt_' + index, 'inbd_' + index, 'inbr_' + index, project.bugid)">
+            <div class="container">
+              <label for="title"><b>Title</b></label>
+              <input type="text" :id="'inbt_' + index" placeholder="Title" name="name" required>
+
+              <label for="descrip"><b>Description</b></label>
+              <input type="text" :id="'inbd_' + index" placeholder="Discription" name="name" required>
+
+              <label for="reward"><b>Bounty</b></label>
+              <input type="number" min="1" :id="'inbr_' + index" placeholder="Bounty" name="reward" required>
+              <button @click="addBug('inbt_' + index, 'inbd_' + index, 'inbr_' + index, project.bugId)">Add</button>
+            </div>
+          </form>
+        </div>
+        <button @click="flipAddBugs">Add a Bug</button>
+
+        
+
 
       </div>
-      <button @click="flipContributor">Add a Member</button>
-
+      
+      </card>
+      
+      <card>
         <div v-if="projectrefs.length>0">
           <h2>Associated Projects: </h2>
           <div class="container" style="border:1px solid #ccc" v-for="(proj, index) in projectrefs"
@@ -233,6 +285,7 @@
             <p style="padding-left: 10px">Owner Adress: {{ proj.owner }}</p>
           </div>
         </div>
+    </card>
     </card>
 
 
@@ -251,9 +304,6 @@
 
 
   </template>
-
-
-
 
 
 
@@ -313,15 +363,16 @@
                 
                 v-for="(member, index) in allusers"
                 v-bind:key="member"
+                v-bind:nom="getName(member, 'tgmaaaa_' + index)"
               >
 
-                    <div @click="openProfile(member)" style="cursor: pointer">
+                    <div  @click="openProfile(member)" style="cursor: pointer">
                     <p
                     :id="'tgmaaaa_' + index"
                     style="padding-left: 10px"
                     >
                     
-                    {{ getName(member, 'tgmaaaa_' + index) }}
+                    {{ nom }}
                     </p>
                     <p><b> Address:  </b>{{ member }}</p>
     
@@ -414,7 +465,16 @@
                     
                         </div>
   
-                        
+                        <div v-if="sorgrefs.length>0">
+                          <h2>Associated Organisations: </h2>
+                          <div class="container" style="border:1px solid #ccc" v-for="(org, index) in sorgrefs"
+                            v-bind:key="org.name"
+                          >
+                            <p style="padding-left: 10px">Name: {{ org.name }}</p>
+                            <p style="padding-left: 10px">Owner: <span :id="'oref_' + index" >  {{getName(org.owner,'oref_' + index) }}</span></p>
+                            <p style="padding-left: 10px">Owner Adress: {{ org.owner }}</p>
+                          </div>
+                        </div>                        
   
   
                       </div>
@@ -430,60 +490,110 @@
   
   
   
-  
-  
-                    <card
-                      title="Projects"
-                      v-if="selectedProjects"
+
+
+            <card title="Projects" v-if="selectedProjects"  >
+
+              <div class="explanations" v-for="(project, index) in selectedProjects"
+                v-bind:key="project.name"
+              >
+                <h2>{{ project.name }}</h2>
+                <p><b>Owner: </b><span :id="'sp_' + index">{{ getName(selectedOrgAccount.owner,'sp_' + index) }}</span></p>
+                <p><b>Balance of Project: </b>{{ project.balance }} BC Tokens</p>
+                <div>
+                  <h2>Contributors:</h2>
+                  <div class="container" style="border:1px solid #ccc" 
+                    v-for="(contributor, index2) in project.contributors"
+                    v-bind:key="contributor.address"
+                  >
+                    
+                    <p
+                      :id="'tgmm_' + index2+'_' + index"
+                      style="padding-left: 10px"
                     >
 
+                      {{ getName(contributor, 'tgmm_' + index2+'_' + index) }}
+                    </p>
+                    <p><b> Address:  </b>{{ contributor }}</p>
+                  </div>
 
 
+        <div v-if="getBugsById2(project.bugId).length>0">
+          <h2>Bugs: </h2>
+          <div class="container" style="border:1px solid #ccc" v-for="(bugg,indexb) in getBugsById2(project.bugId)"
+            v-bind:key="bugg.title"
+            
+          >
+            
+            <p style="padding-left: 10px">Title: {{ bugg.title }}</p>
+            <p style="padding-left: 10px">Description: {{ bugg.description }}</p>
+            <p style="padding-left: 10px">Bounty: {{ bugg.reward }}</p>
+            
+            <h3 v-if="bugg.proposals.length>0" style="padding-left: 10px">Proposals:</h3>
+                <div class="container"  style="border:1px solid #ccc;margin-left: 20px" v-for="ppsl in bugg.proposals"
+                v-bind:key="ppsl"
+                >
 
-                      <div
-                        class="explanations"
-                        v-for="(project, index) in selectedProjects"
-                        v-bind:key="project.name"
-                      >
-                        <h2>{{ project.name }}</h2>
-                        <p><b>Owner: </b><span :id="'sp_' + index">{{ getName(selectedOrgAccount.owner,'sp_' + index) }}</span></p>
-                        <div>
-                          <b>Contributors:</b>
-                          <div class="container" style="border:1px solid #ccc"
-                            
-                            v-for="(contributor, index2) in project.contributors"
-                            v-bind:key="contributor.address"
-                          >
-                            
-                            <p
-                              :id="'tgmm_' + index2+'_' + index"
-                              style="padding-left: 10px"
-                            >
-  
-                              {{ getName(contributor, 'tgmm_' + index2+'_' + index) }}
-                            </p>
-                            <p><b> Address:  </b>{{ contributor }}</p>
-                          </div>
-  
-  
-                    
-                        </div>
-                          
-                      
-                        <p><b>Balance of Project: </b>{{ project.balance }} T</p>
-  
-                        </div>
-  
-                    </card>
+                  <p style="padding-left: 10px">{{ ppsl }}</p>
+                  
+                  
+                </div>
+            <label for="addfix"><b>Propose a Fix</b></label>
+            <input type="text" :id="'inbfffxyz_' + index+''+indexb" placeholder="Fix" name="name" required>
 
-
+            <button @click="addFix2(bugg, project.owner, 'inbfffxyz_' + index+''+indexb)">Propose Fix</button>
+            
+          </div>
+        </div>
 
 
 
 
 
                 </div>
-  
+                  
+              
+                
+
+                <div class="container" v-if="showDonation">
+                  <form id="donation-signup-form" style="border:1px solid #ccc" @submit.prevent="donateToken(selectedAddress, index)">
+                    <div class="container">
+                      <label for="tokens"><b>Token Donation</b></label>
+                      <input type="number" v-model="donationAmount" placeholder="input Token amount to give" name="tokens" required>
+
+                    </div>
+                  </form>
+                </div>
+
+
+              </div>
+
+                <button @click="flipDonation">Donate</button>
+
+
+                
+                
+                <div v-if="sprojectrefs.length>0">
+                  <h2>Associated Projects: </h2>
+                  <div class="container" style="border:1px solid #ccc" v-for="(proj, index) in sprojectrefs"
+                    v-bind:key="proj.name"
+                  >
+                    <p style="padding-left: 10px">Name: {{ proj.name }}</p>
+                    <p style="padding-left: 10px">Owner: <span :id="'prref_' + index" >  {{getName(proj.owner,'prref_' + index) }}</span></p>
+                    <p style="padding-left: 10px">Owner Adress: {{ proj.owner }}</p>
+                  </div>
+                </div>                        
+
+            </card>
+
+
+
+
+
+
+
+        </div>
+
         
   
 
@@ -559,13 +669,21 @@ export default defineComponent({
     const selectedOrgAccount = null;
     const selectedProjects: any[] = [];
     const showAllUsers = true;
+    const bugs: any[] = [];
+    const showAddBugs = false;
+    const sorgrefs: any[] = []
+    const sprojectrefs: any[] = []
+    const sbugs: any[] = []
+    const donationAmount = 0
+    const showDonation = false;
     
 
     return {account, username, mbalance, orgAccount,
      projects, showAddMember, showAddContributor, memadrs, memcon,
      tabList: ["Account", "Explore"],
      allusers, membalance, showAddBalance, orgrefs, projectrefs,
-     selectedProfile, selectedAddress, selectedOrgAccount, selectedProjects, showAllUsers
+     selectedProfile, selectedAddress, selectedOrgAccount, selectedProjects, showAllUsers,
+     bugs, showAddBugs, sorgrefs, sprojectrefs, donationAmount, showDonation ,sbugs
      }
   },
   methods: {
@@ -579,8 +697,13 @@ export default defineComponent({
     
     },
     async updateAllUsers() {
-      const { contract } = this
+     const { contract, address } = this
       this.allusers = await contract.methods.getAllUsers().call()
+        .filter((str:string) => !(str.toLowerCase() === address.toLowerCase()))   
+    },
+    async updateBugs() {
+      const { contract, address } = this
+      this.bugs = await contract.methods.getBugs(address).call()
     
     },
     async updateOrgAccount() {
@@ -588,31 +711,36 @@ export default defineComponent({
       this.orgAccount = await contract.methods
         .getOrg(address)
         .call()
-        console.log(this.orgAccount)
+        
     },
     async updateProjects() {
       const { address, contract } = this
       this.projects = await contract.methods
         .getProject(address)
         .call()
-      console.log(this.projects)
+      
     },
     flipMember() {
       this.showAddMember = !this.showAddMember;
     },
+    flipAddBugs() {
+     
+      
+      this.showAddBugs = !this.showAddBugs;
+    },
     flipBalance() {
       this.showAddBalance = !this.showAddBalance;
-      console.log("refs")
-      console.log(this.orgrefs)
-      console.log(this.projectrefs)
+     
     },
     flipContributor() {
       this.showAddContributor = !this.showAddContributor;
-      console.log(this.orgrefs)
-      console.log(this.projectrefs)
+      
     },
     flipAllUsers() {
       this.showAllUsers = !this.showAllUsers;
+    },
+    flipDonation(){
+      this.showDonation = !this.showDonation
     },
     async signUp() {
       
@@ -630,6 +758,19 @@ export default defineComponent({
       const { contract } = this
       await contract.methods.addBalance(200).send()
       await this.updateAccount()
+    },
+    async donateToken(owner:string, index:any){
+      const { contract, address } = this
+      const value = this.donationAmount
+      if(value > contract.methods.getUser(owner).call().balance){
+        alert("Not enough tokens!")
+      }else{
+         contract.methods.donateProject(owner, index, value).send()
+      }
+      this.showDonation = false
+
+      await this.updateAccount()
+
     },
     async addBalance() {
       const { contract } = this
@@ -655,6 +796,19 @@ export default defineComponent({
       this.showAddContributor = false
       await this.updateProjects()
     },
+    async addBug(idd1:any, idd2:any, idd3:any, bugid:any) {
+      const { contract } = this
+      
+      const title = document.getElementById(idd1) as HTMLInputElement;
+      const desc = document.getElementById(idd2) as HTMLInputElement;
+      const bounty = document.getElementById(idd3) as HTMLInputElement;
+      await contract.methods.addBug(bugid, title.value, desc.value, bounty.value).send()
+      
+      this.showAddBugs = false
+      await this.updateBugs()
+      await this.updateAccount()
+      await this.updateProjects()
+    },
     async openProfile(adr:any){
       const { contract } = this
       this.selectedAddress = adr
@@ -663,13 +817,65 @@ export default defineComponent({
         .call()
       this.selectedProjects = await contract.methods.getProject(adr).call()
       this.selectedProfile = await contract.methods.getUser(adr).call()
+      this.sbugs = await contract.methods.getBugs(adr).call()
       this.showAllUsers = false;
     },
     hoo(){  
       const {allusers } = this;
       this.allusers = allusers;
-      console.log("fuuuuuuuuuuuuuuck")
-      console.log(this.allusers)
+      
+    },
+    getBugsById(projid:any){  
+      const lst = [];
+      var idx = 0
+      for (idx = 0; idx < this.bugs.length; idx++) {
+          if(this.bugs[idx].projId === projid) lst.push(this.bugs[idx])
+      }
+      return lst
+    },
+    getBugsById2(projid:any){  
+      const lst = [];
+      var idx = 0
+      for (idx = 0; idx < this.sbugs.length; idx++) {
+          if(this.sbugs[idx].projId === projid && !this.sbugs[idx].resolved) lst.push(this.sbugs[idx])
+      }
+      return lst
+    },
+    async addFix(b:any, owner:any, idd:any){  
+      const { contract } = this
+      const val = document.getElementById(idd) as HTMLInputElement;
+      
+      await contract.methods.proposeFix(owner, this.bugs.indexOf(b), val.value).send()
+      
+      val.value = ''
+     
+      await this.updateBugs()
+      await this.updateAccount()
+      await this.updateProjects()
+    },
+    async addFix2(b:any, owner:any, idd:any){  
+      const { contract } = this
+      const val = document.getElementById(idd) as HTMLInputElement;
+      
+      await contract.methods.proposeFix(owner, this.sbugs.indexOf(b), val.value).send()
+      
+      val.value = ''
+     
+      await this.updateBugs()
+      await this.updateAccount()
+      await this.updateProjects()
+    },
+
+    async acceptFix(b:any, proposer:any){  
+      const { contract } = this
+      
+      
+      await contract.methods.acceptFix(this.bugs.indexOf(b), proposer).send()
+      
+     
+      await this.updateBugs()
+      await this.updateAccount()
+      await this.updateProjects()
     },
 
     getName(adrs:any, idd:any){  
@@ -685,17 +891,19 @@ export default defineComponent({
     const account = await contract.methods.getUser(address).call()
     if (account.registered) this.account = account
     const orgAccount = await contract.methods.getOrg(address).call()
-    console.log(orgAccount)
-    console.log(address)
+
     if (orgAccount.name) this.orgAccount = orgAccount
     const projects = await contract.methods.getProject(address).call()
     if (projects.length > 0) this.projects = projects
     const allusers = await contract.methods.getAllUsers().call()
-    if (allusers.length > 0) this.allusers = allusers
+    const allusers2 = allusers.filter((str:string) => !(str.toLowerCase() === address.toLowerCase()))
+    if (allusers2.length > 0) this.allusers = allusers2
     const orgrefs = await contract.methods.getOrgRefs(address).call()
     const projectrefs = await contract.methods.getProjectRefs(address).call()
     if (orgrefs.length > 0) this.orgrefs = orgrefs
     if (projectrefs.length > 0) this.projectrefs = projectrefs
+    const bugs = await contract.methods.getBugs(address).call()
+    if (bugs.length > 0) this.bugs = bugs
   },
 })
 </script>
@@ -807,7 +1015,7 @@ hr {
   margin-bottom: 25px;
 }
 
-/* Set a style for all buttons */
+
 button {
   background-color: #04AA6D;
   color: white;
@@ -823,31 +1031,31 @@ button:hover {
   opacity:1;
 }
 
-/* Extra styles for the cancel button */
+
 .cancelbtn {
   padding: 14px 20px;
   background-color: #f44336;
 }
 
-/* Float cancel and signup buttons and add an equal width */
+
 .cancelbtn, .signupbtn {
   float: left;
   width: 50%;
 }
 
-/* Add padding to container elements */
+
 .container {
   padding: 16px;
 }
 
-/* Clear floats */
+
 .clearfix::after {
   content: "";
   clear: both;
   display: table;
 }
 
-/* Change styles for cancel button and signup button on extra small screens */
+
 @media screen and (max-width: 300px) {
   .cancelbtn, .signupbtn {
     width: 100%;
