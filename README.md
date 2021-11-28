@@ -129,7 +129,7 @@ in this example
 
 ![](example_pics/propose_fix.PNG)
 
-- GB then accepts the fix and the bounty is automatically transfered to LJ
+- GB then accepts the fix (visible only on his Account since h'es the owner) and the bounty is automatically transfered to LJ
 
 ![](example_pics/accept_fix.PNG)
 ![](example_pics/fix_accepted.PNG)
