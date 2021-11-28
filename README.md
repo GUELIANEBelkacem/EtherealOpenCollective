@@ -91,11 +91,12 @@ Implement an OpenCollective from scratch in Solidity.
 
 # Features
 
-After connecting to Metamask and creating you account, you'll be guided to the main page with 2 pages:
+After connecting to Metamask and creating you account, you'll be guided to the main page with 2 tabs:
 
 - The Account page 
 - The Explore page
 
+## Account Page
 In the Account page, you'll be able to see you personal account, as well as have the ability to recharge you balance 
 ![](example_pics/account.PNG)
 
@@ -106,5 +107,31 @@ you also have the ability to view and manage you company (add memebers..)
 
 and finally you can create projects, add memebers as well as start **bounties** for the bugs that you want fixed 
 ![](example_pics/project.PNG)
+you can also see a recap of all the associated projects, owned by others and of which you're a member 
+
+## Expolore Page 
+On the explore page, you'll find a list with all the other users
+![](example_pics/all_users.PNG)
+
+once you click on one of them, you'll see their profile, their organisations, and a list of their projects 
+
+![](example_pics/explore.PNG)
+
+on these projects you can donate
+
+![](example_pics/donations.PNG)
+
+or if they have declared a bug, you can submit a fix:
+in this example 
+
+- GB declares a bug 
+- LJ sees the bug on GB's page and submites a fix 
+
+![](example_pics/propose_fix.PNG)
+
+- GB then accepts the fix and the bounty is automatically transfered to LJ
+
+![](example_pics/accept_fix.PNG)
+![](example_pics/fix_accepted.PNG)
 
 
