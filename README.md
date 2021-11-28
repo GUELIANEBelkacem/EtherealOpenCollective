@@ -96,6 +96,15 @@ After connecting to Metamask and creating you account, you'll be guided to the m
 - The Account page 
 - The Explore page
 
-In the Account page, you'll be able to see you personal account 
+In the Account page, you'll be able to see you personal account, as well as have the ability to recharge you balance 
 ![](example_pics/account.PNG)
+
+**all you transactions will be deducted from this balance**
+
+you also have the ability to view and manage you company (add memebers..)
+![](example_pics/company.PNG)
+
+and finally you can create projects, add memebers as well as start **bounties** for the bugs that you want fixed 
+![](example_pics/project.PNG)
+
 
