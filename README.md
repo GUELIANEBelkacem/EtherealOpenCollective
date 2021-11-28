@@ -97,19 +97,19 @@ After connecting to Metamask and creating you account, you'll be guided to the m
 - The Explore page
 
 ## Account Page
-In the Account page, you'll be able to see you personal account, as well as have the ability to recharge you balance 
+In the Account page, you'll be able to see your personal account, as well as have the ability to recharge your balance 
 ![](example_pics/account.PNG)
 
-**all you transactions will be deducted from this balance**
+**all your transactions will be deducted from this balance**
 
-you also have the ability to view and manage you company (add memebers..)
+you also have the ability to view and manage your company (add memebers..)
 ![](example_pics/company.PNG)
 
-and finally you can create projects, add memebers as well as start **bounties** for the bugs that you want fixed 
+and finally you can create projects, add members as well as start **bounties** for the bugs that you want fixed 
 ![](example_pics/project.PNG)
 you can also see a recap of all the associated projects, owned by others and of which you're a member 
 
-## Expolore Page 
+## Explore Page 
 On the explore page, you'll find a list with all the other users
 ![](example_pics/all_users.PNG)
 
