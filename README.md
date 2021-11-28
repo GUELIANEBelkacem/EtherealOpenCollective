@@ -97,5 +97,5 @@ After connecting to Metamask and creating you account, you'll be guided to the m
 - The Explore page
 
 In the Account page, you'll be able to see you personal account 
-![](example_pics/account.png)
+![](example_pics/account.PNG)
 
