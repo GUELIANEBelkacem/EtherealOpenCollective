@@ -88,3 +88,14 @@ Implement an OpenCollective from scratch in Solidity.
 - Create a page to open an entreprise account.
 - Create a page to create a project.
 - Create a page to get a full recap of everything that happened on a project as a timeline.
+
+# Features
+
+After connecting to Metamask and creating you account, you'll be guided to the main page with 2 pages:
+
+- The Account page 
+- The Explore page
+
+In the Account page, you'll be able to see you personal account 
+![](example_pics/account.png)
+
