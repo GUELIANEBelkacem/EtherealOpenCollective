@@ -145,7 +145,7 @@ contract BuildCollective is Ownable {
   function donateProject(address _owner, uint256 _idx, uint256 _amount) public{
     require(users[msg.sender].registered, "User Not Found");
     require(users[msg.sender].balance >= _amount, "Balace not Sufficient");
-    projects[_owner][_idx].balance += _amount;
+    projects[_owner][_idx].balance = projects[_owner][_idx].balance + _amount;
     users[msg.sender].balance = users[msg.sender].balance - _amount;
   }
 

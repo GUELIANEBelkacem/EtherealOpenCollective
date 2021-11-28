@@ -765,11 +765,12 @@ export default defineComponent({
       if(value > contract.methods.getUser(owner).call().balance){
         alert("Not enough tokens!")
       }else{
-         contract.methods.donateProject(owner, index, value).send()
+         await contract.methods.donateProject(owner, index, value).send()
       }
       this.showDonation = false
 
       await this.updateAccount()
+      await this.openProfile(owner)
 
     },
     async addBalance() {
