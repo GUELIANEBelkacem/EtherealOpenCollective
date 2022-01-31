@@ -1,7 +1,7 @@
 # Build Collective
 ## By GUELIANE Belkacem & LEE JaeSoo
 Welcome Welcome 
-The idea will be to implement an OpenCollective competitor
+What you're looking at is the emplimentation of an OpenCollective competitor
 in a decentralized way, on the Ethereum blockchain as a backend. This will have cool side effects, like not
 be forced to pay for servers, instead, we will destroy every electrical grid on earth as well as keep the GPU manifacturers busy, in search for privacy, decentralization, freedom and hapiness, just like god intended !!!
 
