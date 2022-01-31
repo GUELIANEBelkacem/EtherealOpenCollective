@@ -1,8 +1,9 @@
 # Build Collective
 ## By GUELIANE Belkacem & LEE JaeSoo
-Welcome to the DAAR project. The idea will be to implement an OpenCollective competitor
-in a decentralized way, on Ethereum. This will have cool side effects, like not
-be forced to pay for servers.
+Welcome Welcome 
+The idea will be to implement an OpenCollective competitor
+in a decentralized way, on the Ethereum blockchain. This will have cool side effects, like not
+be forced to pay for servers, instead, we will destroy every electrical grid on earth as well as keep the GPU manifacturers busy, in search for privacy, decentralization, freedom and hapiness, just like god intended !!!
 
 # Installation
 
